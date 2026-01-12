@@ -94,12 +94,12 @@ export function getCartItemsFromLocalStorage() {
   return [];
 }
 
-export function getCartTotal(cartItems) {
+export function getCartTotal(cartItems, shippingValue) {
   let sum = 0;
   cartItems.forEach((item) => {
     sum += item.price * item.quantity;
   });
-  return sum.toFixed(2);
+  return Number(sum + shippingValue);
 }
 
 export async function updateFullCart(id, items) {

@@ -1,25 +1,26 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import Info from './Info';
+import { useState } from "react";
+
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import Info from "./Info";
 
 function InfoMobile({ totalPrice }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
 
   const DrawerList = (
-    <Box sx={{ width: 'auto', px: 3, pb: 3, pt: 8 }} role="presentation">
+    <Box sx={{ width: "auto", px: 3, pb: 3, pt: 8 }} role="presentation">
       <IconButton
         onClick={toggleDrawer(false)}
-        sx={{ position: 'absolute', right: 8, top: 8 }}
+        sx={{ position: "absolute", right: 8, top: 8 }}
       >
         <CloseIcon />
       </IconButton>
@@ -40,12 +41,8 @@ function InfoMobile({ totalPrice }) {
         open={open}
         anchor="top"
         onClose={toggleDrawer(false)}
-        PaperProps={{
-          sx: {
-            top: 'var(--template-frame-height, 0px)',
-            backgroundImage: 'none',
-            backgroundColor: 'background.paper',
-          },
+        sx={{
+          zIndex: 1500,
         }}
       >
         {DrawerList}

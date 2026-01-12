@@ -2,6 +2,20 @@
 const nextConfig = {
   /* config options here */
   reactStrictMode: false,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fakestoreapi.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "mui.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

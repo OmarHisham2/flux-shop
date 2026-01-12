@@ -1,10 +1,12 @@
 import { Roboto } from "next/font/google";
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "../theme";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import "./globals.css";
 import { AuthContextProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import AppTheme from "./shared-theme/AppTheme";
+import { CssBaseline } from "@mui/material";
+import AppAppBar from "./components/AppAppBar";
+import Footer from "./components/Footer";
 
 export const metadata = {
   title: "Flux Shop",
@@ -20,17 +22,19 @@ const roboto = Roboto({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={roboto.variable}>
-      <head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </head>
+    <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
+          <AppTheme>
+            <CssBaseline enableColorScheme />
             <AuthContextProvider>
-              <CartProvider>{children}</CartProvider>
+              <CartProvider>
+                <AppAppBar />
+                {children}
+                <Footer />
+              </CartProvider>
             </AuthContextProvider>
-          </ThemeProvider>
+          </AppTheme>
         </AppRouterCacheProvider>
       </body>
     </html>

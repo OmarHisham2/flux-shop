@@ -1,6 +1,6 @@
 import { registerUser } from "@/app/services/authServices";
 import { ChevronRightRounded } from "@mui/icons-material";
-import { Box, Button, TextField } from "@mui/material";
+import { Alert, Box, Button, TextField } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
@@ -31,7 +31,6 @@ export default function CheckoutForm() {
 
   /* Non-local Validation States */
   const [errorMessage, setErrorMessage] = useState("");
-
   const validateInputsLocally = (
     name,
     email,
@@ -71,23 +70,30 @@ export default function CheckoutForm() {
 
     if (!name || name.length < 1) {
       setNameError(true);
-      setNameErrorMessage("Name is required.");
+      setNameErrorMessage("Please enter a valid name");
       isValid = false;
     } else {
       setNameError(false);
       setNameErrorMessage("");
     }
 
-    if (!address || address.length < 1) {
+    if (!address || address.trim().length < 1) {
       setAddressError(true);
-      setAddressErrorMessage("Address is required.");
+      setAddressErrorMessage("Please enter a valid address.");
+      isValid = false;
     }
     if (
       !phoneNumber ||
       phoneNumber.length < 6 ||
-      /^(\+?\d{1,3})?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/
-    )
-      return isValid;
+      /^\+([0-9]{1,4})[-\s]?([0-9]{1,15})$/
+    ) {
+      setPhoneError(true);
+      setPhoneErrorMessage(
+        "Please enter a valid phone number (e.g., +20123...)"
+      );
+      isValid = false;
+    }
+    return isValid;
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -231,6 +237,11 @@ export default function CheckoutForm() {
             color={phoneError ? "error" : "primary"}
           />
         </FormGrid>
+        {errorMessage && (
+          <Alert color="error" severity="error">
+            {errorMessage}
+          </Alert>
+        )}
       </Grid>
       <Button
         variant="contained"

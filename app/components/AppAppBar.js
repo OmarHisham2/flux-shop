@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import { forwardRef, useState } from "react";
 
 import { styled, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -15,26 +14,25 @@ import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import ColorModeIconDropdown from "@/app/shared-theme/ColorModeIconDropdown";
-import Sitemark from "@/app/components/SitemarkIcon";
 import {
-  Alert,
   Badge,
   Dialog,
   DialogContent,
-  Link,
+  Skeleton,
   Slide,
-  Snackbar,
+  Typography,
 } from "@mui/material";
 import { ShoppingCart } from "@mui/icons-material";
 import { useAuthContext } from "@/app/context/AuthContext.js";
 import ProfileDropdown from "@/app/shared-theme/ProfileDropdown";
-import SearchBar from "./SearchBar";
 import { useCart } from "@/app/context/CartContext";
-import { useRouter } from "next/navigation";
 import Register from "../home/Auth/Register";
 import Login from "../home/Auth/Login";
 import Checkout from "../checkout/page";
-
+import Image from "next/image";
+import FluxShopIcon from "./FluxShopIcon";
+import { signOut } from "@firebase/auth";
+import { auth } from "../services/firebase";
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -51,38 +49,41 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: "8px 12px",
 }));
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function AppAppBar() {
   const [open, setOpen] = useState(false);
 
-  const [cartOpen, setCartOpen] = useState(false);
-
   const [authMode, setAuthMode] = useState(null);
 
   const switchAuth = (type) => {
     setAuthMode(type);
   };
-  const router = useRouter();
 
-  const { user } = useAuthContext();
+  const { user, loading } = useAuthContext();
 
-  const { cartCount } = useCart();
+  const { cartCount, cartOpen, toggleCart, clearCart } = useCart();
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
 
-  const toggleCart = () => {
-    setCartOpen(!cartOpen);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      clearCart();
+      console.log("Signed out successfuly!");
+    } catch (e) {
+      console.log("Couldn't sign out" + e);
+    }
   };
-
   return (
     <AppBar
       position="fixed"
       enableColorOnDark
+      elevation={0}
       sx={{
         boxShadow: 0,
         bgcolor: "transparent",
@@ -95,7 +96,8 @@ export default function AppAppBar() {
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
-            <Sitemark />
+            <FluxShopIcon />
+
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <Button variant="text" color="info" size="small" href="/home">
                 Home
@@ -119,8 +121,26 @@ export default function AppAppBar() {
               alignItems: "center",
             }}
           >
-            {user && <ProfileDropdown />}
-            {!user && (
+            {user && loading && (
+              <Skeleton>
+                <ProfileDropdown />
+              </Skeleton>
+            )}
+            {user && !loading && <ProfileDropdown />}
+            {!user && loading && (
+              <Skeleton animation="wave">
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                  underline="none"
+                  onClick={() => setAuthMode("login")}
+                >
+                  Sign in
+                </Button>
+              </Skeleton>
+            )}
+            {!user && !loading && (
               <Button
                 color="primary"
                 variant="outlined"
@@ -150,13 +170,42 @@ export default function AppAppBar() {
                 overlap="circular"
               />
             </IconButton>
-
             <ColorModeIconDropdown />
           </Box>
 
           <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
-            <ColorModeIconDropdown size="medium" />
-            <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
+            {user && loading && (
+              <Skeleton>
+                <ProfileDropdown />
+              </Skeleton>
+            )}
+            {user && !loading && <ProfileDropdown />}
+            <IconButton
+              aria-label="cart"
+              data-screenshot="toggle-mode"
+              disableRipple
+              size="small"
+              aria-controls={open ? "color-scheme-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              onClick={() => {
+                toggleCart();
+              }}
+            >
+              <ShoppingCart fontSize="small" />
+              <Badge
+                badgeContent={cartCount}
+                color="primary"
+                overlap="circular"
+              />
+            </IconButton>
+            <ColorModeIconDropdown />
+
+            <IconButton
+              aria-label="Menu button"
+              onClick={toggleDrawer(true)}
+              size="small"
+            >
               <MenuIcon />
             </IconButton>
             <Drawer anchor="top" open={open} onClose={toggleDrawer(false)}>
@@ -176,16 +225,42 @@ export default function AppAppBar() {
                 <MenuItem href="/features">Features</MenuItem>
                 <MenuItem href="/about">About</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
-                    Sign in
-                  </Button>
-                </MenuItem>
+                {!user && (
+                  <MenuItem>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      fullWidth
+                      onClick={() => setAuthMode("register")}
+                    >
+                      Register
+                    </Button>
+                  </MenuItem>
+                )}
+                {!user && (
+                  <MenuItem>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => setAuthMode("login")}
+                    >
+                      Login
+                    </Button>
+                  </MenuItem>
+                )}
+                {user && (
+                  <MenuItem>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => handleLogout()}
+                    >
+                      Logout
+                    </Button>
+                  </MenuItem>
+                )}
               </Box>
             </Drawer>
           </Box>
@@ -194,15 +269,20 @@ export default function AppAppBar() {
       <Dialog
         open={authMode !== null}
         onClose={() => setAuthMode(null)}
-        color=""
         sx={{
           "& .MuiPaper-root": {},
+          backgroundImage: "none",
+          backgroundColor: "transparent",
+          boxShadow: "none",
         }}
       >
         <DialogContent
           sx={{
+            p: 0,
+
             display: "flex",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
           {(authMode === "login" && (

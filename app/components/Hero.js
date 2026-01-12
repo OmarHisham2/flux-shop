@@ -4,8 +4,8 @@ import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import React, { useState } from "react";
-
+import bannerLight from "@/assets/bannerLight.png";
+import bannerDark from "@/assets/bannerDark.png";
 const StyledBox = styled("div")(({ theme }) => ({
   alignSelf: "center",
   width: "100%",
@@ -17,23 +17,23 @@ const StyledBox = styled("div")(({ theme }) => ({
   border: "1px solid",
   borderColor: (theme.vars || theme).palette.grey[200],
   boxShadow: "0 0 12px 8px hsla(220, 25%, 80%, 0.2)",
-  backgroundImage: "https://i.postimg.cc/9XsMCWgG/11771949-4836542.jpg",
-  backgroundSize: "cover",
+  backgroundImage: `url(${bannerLight.src})`,
+  backgroundSize: "100%",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
   [theme.breakpoints.up("sm")]: {
     marginTop: theme.spacing(10),
     height: 700,
   },
   ...theme.applyStyles("dark", {
     boxShadow: "0 0 24px 12px hsla(210, 100%, 25%, 0.2)",
-    backgroundImage: `url(${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/screenshots/material-ui/getting-started/templates/dashboard-dark.jpg)`,
+    backgroundImage: `url(${bannerDark.src})`,
     outlineColor: "hsla(220, 20%, 42%, 0.1)",
     borderColor: (theme.vars || theme).palette.grey[700],
   }),
 }));
 
-export default function Hero({ flag }) {
+export default function Hero() {
   return (
     <Box
       id="hero"
@@ -96,19 +96,18 @@ export default function Hero({ flag }) {
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis
             tempus massa, non ornare tortor. Integer lobortis sodales nisl, et
           </Typography>
-          {flag === "home" && (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{ minWidth: "fit-content" }}
-              href="#featureditems"
-            >
-              Explore Featured Items
-            </Button>
-          )}
+
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{ minWidth: "fit-content" }}
+            href="#featureditems"
+          >
+            Explore Featured Items
+          </Button>
         </Stack>
-        {flag === "home" ? <StyledBox id="image" /> : ""}
+        <StyledBox id="image" />
       </Container>
     </Box>
   );

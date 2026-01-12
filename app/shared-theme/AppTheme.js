@@ -1,7 +1,8 @@
+"use client";
 import * as React from "react";
 import PropTypes from "prop-types";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-
+import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import { inputsCustomizations } from "./customizations/inputs";
 import { dataDisplayCustomizations } from "./customizations/dataDisplay";
 import { feedbackCustomizations } from "./customizations/feedback";
@@ -24,6 +25,7 @@ function AppTheme(props) {
           typography,
           shadows,
           shape,
+
           components: {
             ...inputsCustomizations,
             ...dataDisplayCustomizations,
@@ -31,6 +33,13 @@ function AppTheme(props) {
             ...navigationCustomizations,
             ...surfacesCustomizations,
             ...themeComponents,
+          },
+          MuiSelect: {
+            ...navigationCustomizations.MuiSelect,
+            defaultProps: {
+              // Defining it here on the client-side prevents the error
+              IconComponent: UnfoldMoreRoundedIcon,
+            },
           },
         });
   }, [disableCustomTheme, themeComponents]);

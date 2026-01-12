@@ -1,20 +1,14 @@
-import PropTypes from "prop-types";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
-import {
-  getCartItemsFromLocalStorage,
-  getCartTotal,
-} from "@/app/services/cartService";
-import { Box, Button, IconButton } from "@mui/material";
-import { Delete, ProductionQuantityLimits } from "@mui/icons-material";
+import { getCartTotal } from "@/app/services/cartServices";
+import { Box, IconButton } from "@mui/material";
+import { Delete } from "@mui/icons-material";
 import { useCart } from "@/app/context/CartContext";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { red } from "@/app/shared-theme/themePrimitives";
+import React from "react";
 function Info() {
-  const { cartItems, addToCart, removeFromCart } = useCart();
+  const { cartItems, addToCart, removeFromCart, orderPlaced } = useCart();
 
   function handleClick(type, product) {
     if (type === "INCREMENT") {
@@ -23,51 +17,14 @@ function Info() {
       removeFromCart(product);
     }
   }
-  const router = useRouter();
-
-  function handleReturnHome() {
-    router.push("/home");
-  }
-
-  if (cartItems.length <= 0) {
-    return (
-      <>
-        <Box sx={{ mb: 10 }}>
-          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-            Total
-          </Typography>
-          <Typography variant="h4" gutterBottom>
-            $0
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <ProductionQuantityLimits
-            sx={{
-              fontSize: 120,
-              opacity: 0.2,
-              mb: 2,
-            }}
-          />
-          <Typography>Your Cart is Empty!</Typography>
-        </Box>
-      </>
-    );
-  }
 
   return (
     <React.Fragment>
       <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-        Total
+        {orderPlaced ? "Summary" : "Total"}
       </Typography>
       <Typography variant="h4" gutterBottom>
-        ${getCartTotal(cartItems)}
+        ${getCartTotal(cartItems, 0).toFixed(2) ?? 0}
       </Typography>
       <List disablePadding>
         {cartItems.map((product) => (
@@ -92,42 +49,50 @@ function Info() {
                       flexDirection: "row",
                     }}
                   >
-                    <Typography>${product.price}</Typography>
                     <Typography component={"span"}>
-                      &emsp;x{product.quantity}
+                      ${product.price.toFixed(2)}
                     </Typography>
+                    {!orderPlaced && (
+                      <Typography component={"span"}>
+                        &emsp;x{product.quantity}
+                      </Typography>
+                    )}
                   </Box>
                 </Box>
               }
             />
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-                alignItems: "center",
-                width: "80px",
-                flexShrink: 0,
-              }}
-            >
-              <IconButton
-                onClick={() => {
-                  handleClick("INCREMENT", product);
+            {orderPlaced ? (
+              <Typography component={"span"}>x{product.quantity}</Typography>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                  alignItems: "center",
+                  width: "80px",
+                  flexShrink: 0,
                 }}
               >
-                +
-              </IconButton>
-              <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                ${product.price * product.quantity}
-              </Typography>
-              <IconButton
-                onClick={() => {
-                  handleClick("DECREMENT", product);
-                }}
-              >
-                {product.quantity <= 1 ? <Delete /> : "-"}
-              </IconButton>
-            </Box>
+                <IconButton
+                  onClick={() => {
+                    handleClick("INCREMENT", product);
+                  }}
+                >
+                  +
+                </IconButton>
+                <Typography variant="body1" sx={{ fontWeight: "medium" }}>
+                  ${(product.price * product.quantity).toFixed(2)}
+                </Typography>
+                <IconButton
+                  onClick={() => {
+                    handleClick("DECREMENT", product);
+                  }}
+                >
+                  {product.quantity <= 1 ? <Delete /> : "-"}
+                </IconButton>
+              </Box>
+            )}
           </ListItem>
         ))}
       </List>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
@@ -7,17 +7,16 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { getCartTotal } from "@/app/services/cartService";
+import { getCartTotal } from "@/app/services/cartServices";
 import { useCart } from "@/app/context/CartContext";
 import { useAuthContext } from "@/app/context/AuthContext";
-import { getUserData } from "@/app/services/authServices";
 
 const addresses = ["1 MUI Drive", "Reactville", "Anytown", "99999", "USA"];
 
-export default function Review({userData}) {
+export default function Review({ userData }) {
   const { cartItems } = useCart();
 
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
 
   const payments = [
     { name: "Card type:", detail: "Visa" },
@@ -29,8 +28,13 @@ export default function Review({userData}) {
     <Stack spacing={2}>
       <List disablePadding>
         <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Products" secondary="4 selected" />
-          <Typography variant="body2">${getCartTotal(cartItems)}</Typography>
+          <ListItemText
+            primary="Products"
+            secondary={`${cartItems.length} selected`}
+          />
+          <Typography variant="body2">
+            ${getCartTotal(cartItems, 0).toFixed(2)}
+          </Typography>
         </ListItem>
         <ListItem sx={{ py: 1, px: 0 }}>
           <ListItemText primary="Shipping" secondary="Plus taxes" />
@@ -39,7 +43,7 @@ export default function Review({userData}) {
         <ListItem sx={{ py: 1, px: 0 }}>
           <ListItemText primary="Total" />
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            ${getCartTotal(cartItems) + 9.99}
+            ${getCartTotal(cartItems, 9.99).toFixed(2)}
           </Typography>
         </ListItem>
       </List>

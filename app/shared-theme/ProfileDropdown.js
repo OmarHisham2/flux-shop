@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 
 import DarkModeIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightModeRounded";
 import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { useColorScheme } from "@mui/material/styles";
+import { Logout, Person, Person2, ShoppingBasket } from "@mui/icons-material";
 import {
-  ArrowDownward,
-  ArrowDownwardSharp,
-  Logout,
-  Person2,
-  South,
-} from "@mui/icons-material";
-import { Button } from "@mui/material";
+  Button,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { signOut } from "@firebase/auth";
 import { auth } from "../services/firebase";
 import { useCart } from "../context/CartContext";
 import { useAuthContext } from "../context/AuthContext";
+import Link from "next/link";
 
 export default function ProfileDropdown(props) {
   const { mode, systemMode, setMode } = useColorScheme();
@@ -78,11 +78,20 @@ export default function ProfileDropdown(props) {
         {...props}
       >
         <Person2 sx={{ fontSize: 20 }} />
-        &nbsp;&nbsp;{user.displayName}
+        &nbsp;&nbsp;
+        <Typography
+          sx={{
+            whiteSpace: "nowrap",
+            maxWidth: "60px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {user.displayName}
+        </Typography>
       </Button>
       <Menu
         anchorEl={anchorEl}
-        id="account-menu"
         open={open}
         onClose={handleClose}
         onClick={handleClose}
@@ -98,10 +107,25 @@ export default function ProfileDropdown(props) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <Button startIcon={<Person2 />}>Profile</Button>
-        <Button onClick={handleLogout} startIcon={<Logout />}>
-          Logout
-        </Button>
+        <MenuItem component={Link} href="/myorders">
+          <ListItemIcon>
+            <ShoppingBasket fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>My Orders</ListItemText>
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <Person fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Profile</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleLogout}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Logout</ListItemText>
+        </MenuItem>
       </Menu>
     </React.Fragment>
   );

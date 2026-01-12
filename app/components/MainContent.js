@@ -1,32 +1,31 @@
-import PropTypes from "prop-types";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { styled } from "@mui/material/styles";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import RssFeedRoundedIcon from "@mui/icons-material/RssFeedRounded";
-import { filterProducts, getProducts } from "../services/productService";
+import {
+  filterProducts,
+  getProducts,
+  searchProduct,
+} from "../services/productServices";
 import Product from "./Product";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-export function Search() {
+export function Search({ searchValue, onValueChange }) {
   return (
     <FormControl sx={{ width: { xs: "100%", md: "25ch" } }} variant="outlined">
       <OutlinedInput
         size="small"
         id="search"
         placeholder="Search…"
+        value={searchValue}
         sx={{ flexGrow: 1 }}
+        onChange={(event) => {
+          onValueChange(event.target.value);
+        }}
         startAdornment={
           <InputAdornment position="start" sx={{ color: "text.primary" }}>
             <SearchRoundedIcon fontSize="small" />
@@ -42,21 +41,27 @@ export function Search() {
 
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = useState("all");
-  const [items, setItems] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const [searchValue, setSearchValue] = useState("");
 
   const handleClick = async (filter) => {
     const filteredItems = await filterProducts(filter);
-    setItems(filteredItems);
+    setProducts(filteredItems);
     setFocusedCardIndex(filter);
+    setSearchValue("");
   };
 
   useEffect(() => {
     async function retrieveItems() {
-      const allItems = await getProducts();
-      setItems(allItems);
+      const allProducts = await getProducts();
+      setProducts(allProducts);
     }
     retrieveItems();
   }, []);
+
+  const displayedProducts = searchProduct(products, searchValue);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <div>
@@ -74,7 +79,7 @@ export default function MainContent() {
           overflow: "auto",
         }}
       >
-        <Search />
+        <Search searchValue={searchValue} onValueChange={setSearchValue} />
       </Box>
       <Box
         sx={{
@@ -91,7 +96,7 @@ export default function MainContent() {
           sx={{
             display: "inline-flex",
             flexDirection: "row",
-            gap: 3,
+            gap: 1,
             overflow: "auto",
           }}
         >
@@ -164,20 +169,35 @@ export default function MainContent() {
             overflow: "auto",
           }}
         >
-          <Search />
+          <Search searchValue={searchValue} onValueChange={setSearchValue} />
         </Box>
       </Box>
       <Grid container spacing={3}>
-        {items &&
-          items.map((item, index) => (
+        {displayedProducts.length > 0 ? (
+          displayedProducts.map((item, index) => (
             <Grid
               key={item.title}
               size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
-              margin-bottom="auto"
+              mb={4}
             >
               <Product src={item.image} title={item.title} price={item.price} />
             </Grid>
-          ))}
+          ))
+        ) : (
+          <Box
+            sx={{
+              textAlign: "center",
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+              display: "flex",
+            }}
+          >
+            <Typography sx={{ textAlign: "center" }} variant="h4">
+              No Results Found!
+            </Typography>
+          </Box>
+        )}
       </Grid>
     </Box>
   );

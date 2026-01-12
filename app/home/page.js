@@ -1,14 +1,10 @@
 "use client";
-import React, { useState } from "react";
-import AppTheme from "@/app/shared-theme/AppTheme";
-import CssBaseline from "@mui/material/CssBaseline";
-import AppAppBar from "@/app/components/AppAppBar";
+import { useState } from "react";
 import Hero from "@/app/components/Hero";
-import LogoCollection from "@/app/components/LogoCollection";
-import Footer from "@/app/components/Footer";
-import { Box, Divider, Grow } from "@mui/material";
+import { Box, Grow } from "@mui/material";
 import { useEffect } from "react";
 import FeaturedItems from "@/app/components/FeaturedItems";
+import Footer from "../components/Footer";
 
 export default function HomePage(props) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -19,20 +15,14 @@ export default function HomePage(props) {
   }, []);
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
+    <>
       <Grow in={isLoaded} timeout={1000}>
         <Box>
-          <AppAppBar />
           <Hero flag="home" />
         </Box>
       </Grow>
-      <div>
-        <FeaturedItems />
-        <Divider />
-
-        <Footer />
-        {/*
+      <FeaturedItems />
+      {/*
         <Testimonials />
         <Divider />
         <Highlights />
@@ -42,7 +32,6 @@ export default function HomePage(props) {
         <FAQ />
         <Divider />
         */}
-      </div>
-    </AppTheme>
+    </>
   );
 }

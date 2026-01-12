@@ -24,16 +24,26 @@ export async function getShuffledProducts() {
 }
 
 export async function filterProducts(category) {
-  const items = await getProducts();
+  const products = await getProducts();
   if (category === "all") {
-    return items;
+    return products;
   }
-  items.forEach((item) => {
-    console.log(item.category);
+  products.forEach((product) => {
+    console.log(product.category);
   });
-  const filteredItems = items.filter((item) => item.category === category);
-  console.log(filteredItems);
-  return filteredItems;
+  const filteredProducts = products.filter(
+    (product) => product.category === category
+  );
+  console.log(filteredProducts);
+  return filteredProducts;
 }
 
-export function searchProduct(items, keyword) {}
+export function searchProduct(products, keyword) {
+  if (!keyword) return products;
+
+  const cleanedKeyword = keyword.toLowerCase().trim();
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().trim().includes(cleanedKeyword)
+  );
+  return filteredProducts;
+}

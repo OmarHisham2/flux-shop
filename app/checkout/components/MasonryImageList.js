@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import {
-  getProducts,
-  getShuffledProducts,
-} from "@/app/services/productService";
+import { useEffect, useState } from "react";
+import { getShuffledProducts } from "@/app/services/productServices";
 import Box from "@mui/material/Box";
-import { styled, keyframes } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Marquee from "react-fast-marquee";
 import { CircularProgress } from "@mui/material";
 

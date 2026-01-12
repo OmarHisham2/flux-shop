@@ -1,8 +1,7 @@
 import { createUserWithEmailAndPassword, updateProfile } from "@firebase/auth";
-import { auth, db, firestore } from "./firebase";
+import { auth, db } from "./firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useCart } from "../context/CartContext";
-import { addToProfileCart } from "./cartService";
+import { addToProfileCart } from "./cartServices";
 export async function registerUser(
   name,
   email,

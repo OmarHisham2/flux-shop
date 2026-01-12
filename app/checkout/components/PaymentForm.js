@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react";
 
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
-import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -83,12 +81,11 @@ const FormGrid = styled("div")(() => ({
   flexDirection: "column",
 }));
 
-export default function PaymentForm() {
-  const [paymentType, setPaymentType] = React.useState("creditCard");
-  const [cardNumber, setCardNumber] = React.useState("");
-  const [cvv, setCvv] = React.useState("");
-  const [expirationDate, setExpirationDate] = React.useState("");
-
+export default function PaymentForm({ updatePaymentFn }) {
+  const [paymentType, setPaymentType] = useState("creditCard");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [expirationDate, setExpirationDate] = useState("");
 
   const handlePaymentTypeChange = (event) => {
     setPaymentType(event.target.value);
@@ -281,10 +278,6 @@ export default function PaymentForm() {
               </FormGrid>
             </Box>
           </PaymentContainer>
-          <FormControlLabel
-            control={<Checkbox name="saveCard" />}
-            label="Remember credit card details for next time"
-          />
         </Box>
       )}
       {paymentType === "bankTransfer" && (

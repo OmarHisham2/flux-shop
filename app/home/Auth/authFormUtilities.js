@@ -14,6 +14,7 @@ export const Card = styled(MuiCard)(({ theme }) => ({
     "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
   [theme.breakpoints.up("sm")]: {
     width: "450px",
+    padding: theme.spacing(5),
   },
   ...theme.applyStyles("dark", {
     boxShadow:
@@ -22,8 +23,9 @@ export const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export const SignUpContainer = styled(Stack)(({ theme }) => ({
-  minHeight: "100%",
-  padding: theme.spacing(2),
+  minHeight: "100dvh",
+  height: "auto",
+  padding: theme.spacing(1),
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4),
   },

@@ -1,10 +1,8 @@
 "use client";
-
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Step from "@mui/material/Step";
@@ -18,26 +16,43 @@ import Info from "./components/Info";
 import InfoMobile from "./components/InfoMobile";
 import PaymentForm from "./components/PaymentForm";
 import Review from "./components/Review";
-import AppTheme from "../shared-theme/AppTheme";
-import ColorModeIconDropdown from "../shared-theme/ColorModeIconDropdown";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
-import { getCartTotal } from "../services/cartService";
 import { CircularProgress, IconButton } from "@mui/material";
 import { useCart } from "../context/CartContext";
 import SitemarkIcon from "../components/SitemarkIcon";
 import { Close } from "@mui/icons-material";
 import MasonryImageList from "./components/MasonryImageList";
-import { useRouter } from "next/navigation";
 import { getUserData } from "../services/authServices";
+import { getCartTotal } from "../services/cartServices";
+import { createOrder } from "../services/orderServices";
+import { v4 as uuidv4 } from "uuid";
+import FluxShopIcon from "../components/FluxShopIcon";
 
-export default function Checkout({ props, closeCartFn }) {
-  const { user, loading } = useAuthContext();
+export default function Checkout({ props }) {
+  const { user } = useAuthContext();
   const [activeStep, setActiveStep] = useState(0);
 
-  const { cartItems } = useCart();
+  const { cartItems, changeOrderPlacedStatus, toggleCart } = useCart();
 
-  const handleNext = () => setActiveStep((prev) => prev + 1);
+  const [orderID, setOrderID] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const handleNext = async () => {
+    if (activeStep + 1 === steps.length) {
+      setLoading(true);
+      await createOrder(
+        cartItems,
+        orderID,
+        user.uid,
+        getCartTotal(cartItems, 9.99)
+      );
+      changeOrderPlacedStatus(true);
+    }
+    setActiveStep((prev) => prev + 1);
+    setLoading(false);
+  };
   const handleBack = () => setActiveStep((prev) => prev - 1);
 
   const [userData, setUserData] = useState({});
@@ -47,6 +62,7 @@ export default function Checkout({ props, closeCartFn }) {
       async function retrieveUserDetails() {
         const userData = await getUserData(user.uid);
         setUserData(userData);
+        setOrderID(uuidv4());
       }
       if (user) retrieveUserDetails();
     }
@@ -85,96 +101,93 @@ export default function Checkout({ props, closeCartFn }) {
   if (cartItems.length <= 0) {
     return (
       <>
-        <AppTheme {...props}>
-          <CssBaseline enableColorScheme />
-          <Box sx={{ position: "fixed", top: "1rem", right: "1rem" }}>
-            <IconButton onClick={closeCartFn}>
-              <Close />
-            </IconButton>
-          </Box>
+        <Box sx={{ position: "fixed", top: "1rem", right: "1rem" }}>
+          <IconButton onClick={toggleCart}>
+            <Close />
+          </IconButton>
+        </Box>
 
+        <Grid
+          container
+          sx={{
+            height: {
+              xs: "100%",
+              sm: "calc(100dvh - var(--template-frame-height, 0px))",
+            },
+            mt: {
+              xs: 4,
+              sm: 0,
+            },
+          }}
+        >
           <Grid
-            container
+            size={{ xs: 12, sm: 5, lg: 4 }}
             sx={{
-              height: {
-                xs: "100%",
-                sm: "calc(100dvh - var(--template-frame-height, 0px))",
-              },
-              mt: {
-                xs: 4,
-                sm: 0,
-              },
+              display: { xs: "none", md: "flex" },
+              flexDirection: "column",
+              backgroundColor: "background.paper",
+              borderRight: { sm: "none", md: "1px solid" },
+              borderColor: { sm: "none", md: "divider" },
+              alignItems: "start",
+              pt: 16,
+              px: 10,
+              gap: 4,
             }}
           >
-            <Grid
-              size={{ xs: 12, sm: 5, lg: 4 }}
-              sx={{
-                display: { xs: "none", md: "flex" },
-                flexDirection: "column",
-                backgroundColor: "background.paper",
-                borderRight: { sm: "none", md: "1px solid" },
-                borderColor: { sm: "none", md: "divider" },
-                alignItems: "start",
-                pt: 16,
-                px: 10,
-                gap: 4,
-              }}
-            >
-              <SitemarkIcon />
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  flexGrow: 1,
-                  width: "100%",
-                  maxWidth: 500,
-                }}
-              >
-                <Info
-                  totalPrice={
-                    activeStep >= 2
-                      ? `$${getCartTotal(cartItems) + 9.99}`
-                      : `$${getCartTotal(cartItems)}`
-                  }
-                />
-              </Box>
-            </Grid>
-            <Grid
-              size={{ sm: 12, md: 7, lg: 8 }}
+            <FluxShopIcon />
+            <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                textAlign: "center",
-                alignContent: "center",
-                maxWidth: "100%",
+                flexGrow: 1,
                 width: "100%",
-                backgroundColor: {
-                  xs: "transparent",
-                  sm: "background.default",
-                },
-                pt: { xs: 0, sm: 16 },
-                px: { xs: 2, sm: 10 },
-                gap: { xs: 4, md: 8 },
+                maxWidth: 500,
               }}
             >
-              <Typography variant="h2">
-                Looks like you haven't added anything yet.
-              </Typography>
-              <Typography variant="subtitle1">
-                Explore our latest featured items to find something you love!
-              </Typography>
-              <MasonryImageList />
-              <Button
-                variant="contained"
-                onClick={() => {
-                  closeCartFn();
-                }}
-              >
-                Continue Shopping
-              </Button>
-            </Grid>
+              <Info
+                totalPrice={
+                  activeStep >= 2
+                    ? `$${getCartTotal(cartItems, 9.99)}`
+                    : `$${getCartTotal(cartItems, 0)}`
+                }
+              />
+            </Box>
           </Grid>
-        </AppTheme>
+          <Grid
+            size={{ sm: 12, md: 7, lg: 8 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "center",
+              alignContent: "center",
+              maxWidth: "100%",
+              width: "100%",
+              backgroundColor: {
+                xs: "transparent",
+                sm: "background.default",
+              },
+              pt: { xs: 0, sm: 16 },
+              px: { xs: 2, sm: 10 },
+              gap: { xs: 4, md: 8 },
+            }}
+          >
+            <Typography variant="h2">
+              Looks like you haven't added anything yet!
+            </Typography>
+            <Typography variant="subtitle1">
+              Explore our latest featured items to find something you love!
+            </Typography>
+            <MasonryImageList />
+            <Button
+              variant="contained"
+              onClick={() => {
+                toggleCart();
+              }}
+            >
+              Continue Shopping
+            </Button>
+          </Grid>
+        </Grid>
       </>
     );
   }
@@ -185,10 +198,13 @@ export default function Checkout({ props, closeCartFn }) {
   ];
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
+    <>
       <Box sx={{ position: "fixed", top: "1rem", right: "1rem" }}>
-        <IconButton onClick={closeCartFn}>
+        <IconButton
+          onClick={() => {
+            toggleCart();
+          }}
+        >
           <Close />
         </IconButton>
       </Box>
@@ -220,7 +236,8 @@ export default function Checkout({ props, closeCartFn }) {
             gap: 4,
           }}
         >
-          <SitemarkIcon />
+          <FluxShopIcon />
+
           <Box
             sx={{
               display: "flex",
@@ -233,8 +250,8 @@ export default function Checkout({ props, closeCartFn }) {
             <Info
               totalPrice={
                 activeStep >= 2
-                  ? `$${getCartTotal(cartItems) + 9.99}`
-                  : `$${getCartTotal(cartItems)}`
+                  ? `$${getCartTotal(cartItems, 9.99)}`
+                  : `$${getCartTotal(cartItems, 0)}`
               }
             />
           </Box>
@@ -302,15 +319,15 @@ export default function Checkout({ props, closeCartFn }) {
                 </Typography>
                 <Typography variant="body1">
                   {activeStep >= 2
-                    ? `$${getCartTotal(cartItems) + 9.99}`
-                    : `$${getCartTotal(cartItems)}`}
+                    ? `$${getCartTotal(cartItems, 9.99).toFixed(2)}`
+                    : `$${getCartTotal(cartItems, 0).toFixed(2)}`}
                 </Typography>
               </div>
               <InfoMobile
                 totalPrice={
                   activeStep >= 2
-                    ? `$${getCartTotal(cartItems) + 9.99}`
-                    : `$${getCartTotal(cartItems)}`
+                    ? (getCartTotal(cartItems) + 9.99).toFixed(2)
+                    : getCartTotal(cartItems).toFixed(2)
                 }
               />
             </CardContent>
@@ -356,13 +373,14 @@ export default function Checkout({ props, closeCartFn }) {
                 <Typography variant="h1">📦</Typography>
                 <Typography variant="h5">Thank you for your order!</Typography>
                 <Typography variant="body1" sx={{ color: "text.secondary" }}>
-                  Your order number is
-                  <strong>&nbsp;#140396</strong>. We have emailed your order
+                  Your order ID is
+                  <strong>&nbsp;{orderID}</strong>. We have emailed your order
                   confirmation and will update you once its shipped.
                 </Typography>
                 <Button
                   variant="contained"
                   sx={{ alignSelf: "start", width: { xs: "100%", sm: "auto" } }}
+                  href="/myorders"
                 >
                   Go to my orders
                 </Button>
@@ -375,7 +393,6 @@ export default function Checkout({ props, closeCartFn }) {
                     {
                       display: "flex",
                       flexDirection: { xs: "column-reverse", sm: "row" },
-                      alignItems: "end",
                       flexGrow: 1,
                       gap: 1,
                       pb: { xs: 12, sm: 0 },
@@ -413,9 +430,25 @@ export default function Checkout({ props, closeCartFn }) {
                       variant="contained"
                       endIcon={<ChevronRightRoundedIcon />}
                       onClick={handleNext}
-                      sx={{ width: { xs: "100%", sm: "fit-content" } }}
+                      disabled={loading}
+                      sx={{
+                        width: {
+                          xs: "100%",
+                          sm: "fit-content",
+                          "&.Mui-disabled": {
+                            backgroundColor: "primary.main",
+                            color: "rgba(255, 255, 255, 0.7)",
+                            opacity: 1,
+                          },
+                        },
+                      }}
                     >
-                      {activeStep === steps.length - 1 ? "Place order" : "Next"}
+                      {activeStep === steps.length - 1
+                        ? !loading && "Place order"
+                        : !loading && "Next"}
+                      {activeStep === steps.length - 1 &&
+                        loading &&
+                        "Placing Order..."}
                     </Button>
                   )}
                 </Box>
@@ -424,6 +457,6 @@ export default function Checkout({ props, closeCartFn }) {
           </Box>
         </Grid>
       </Grid>
-    </AppTheme>
+    </>
   );
 }

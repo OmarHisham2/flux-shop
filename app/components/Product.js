@@ -1,49 +1,82 @@
-import { useAuthContext } from "@/app/context/AuthContext";
 import { useCart } from "@/app/context/CartContext";
 import {
   Box,
   Button,
   Typography,
   Card,
-  CardMedia,
   CardContent,
   CardActions,
 } from "@mui/material";
+
 import Image from "next/image";
+import { useState } from "react";
 /*TODO: Change CardMedia to next/image*/
 function Product({ src, title, price }) {
-  const { addToCart } = useCart();
+  const { addToCart, toggleCart } = useCart();
 
+  const [imageLoading, setImageLoading] = useState(true);
 
   const handleAddToCart = () => {
     addToCart({ src: src, title: title, price: price });
   };
+
+  const handleBuyNow = () => {
+    addToCart({ src: src, title: title, price: price });
+    toggleCart();
+  };
+
   return (
     <Card
       variant="outlined"
       sx={{
         display: "flex",
         height: "100%",
+        width: "100%",
+        overflow: "hidden",
         flexDirection: "column",
         transition: "transform 0.2s, box-shadow 0.2s",
         "&:hover": {
-          transform: "translateY(-2px)",
+          transform: "scale3d(1.05, 1.05, 1)",
           boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
         },
       }}
     >
-      <Box position="relative" height="200px" width="100%" textAlign="center">
-        <img src={src} style={{ height: "100%", objectFit: "cover" }} />
+      <Box
+        sx={{
+          p: 2,
+          height: "200px",
+          width: "100%",
+          position: "relative",
+        }}
+      >
+        <Image
+          src={src}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, 300px"
+          style={{
+            objectFit: "contain",
+            transition: "opacity 0.4s ease-in-out",
+            opacity: imageLoading ? 0 : 1,
+          }}
+          onLoad={() => setImageLoading(false)}
+        />
       </Box>
-      <CardContent>
+      <CardContent sx={{ flexGrow: 1 }}>
         <Typography
           variant="h6"
-          sx={{ fontSize: "1.1rem", fontWeight: 600, textWrap: "overflow" }}
+          sx={{
+            overflow: "hidden",
+            mb: 1,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
         >
           {title}
         </Typography>
         <Typography color="primary" sx={{ fontWeight: "bold" }}>
-          ${price}
+          ${price.toFixed(2)}
         </Typography>
       </CardContent>
       <CardActions sx={{ mt: "auto" }}>
@@ -55,7 +88,12 @@ function Product({ src, title, price }) {
         >
           Add to Cart
         </Button>
-        <Button variant="outlined" size="small" fullWidth>
+        <Button
+          onClick={handleBuyNow}
+          variant="outlined"
+          size="small"
+          fullWidth
+        >
           Buy Now
         </Button>
       </CardActions>

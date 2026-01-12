@@ -1,4 +1,5 @@
-import * as React from "react";
+import { useState } from "react";
+
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -6,46 +7,63 @@ import Card from "@mui/material/Card";
 import MuiChip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
-import DevicesRoundedIcon from "@mui/icons-material/DevicesRounded";
-import { Google, VpnKey } from "@mui/icons-material";
-
+import responsiveDark from "@/assets/features/responsiveDark.png";
+import responsiveLight from "@/assets/features/responsiveLight.png";
+import { styled, useColorScheme, useTheme } from "@mui/material/styles";
+import {
+  Devices,
+  Google,
+  History,
+  ShoppingBag,
+  VpnKey,
+} from "@mui/icons-material";
+import Image from "next/image";
+import smallFirebaseLogo from "@/assets/features/smallFirebaseLogo.svg";
+import orderHistoryDark from "@/assets/features/orderHistoryDark.svg";
+import orderHistoryLight from "@/assets/features/orderHistoryLight.svg";
+import seamlessCheckoutDark from "@/assets/features/seamlessCheckoutDark.svg";
+import seamlessCheckoutLight from "@/assets/features/seamlessCheckoutLight.svg";
+import secureLogo from "@/assets/features/secureLogo.svg";
 const items = [
   {
-    icon: <VpnKey />,
-    title: "User Authentication",
+    icon: <Google color="primary" />,
+    title: "Firebase Integration",
     description:
-      "This item could provide a snapshot of the most important metrics or data points related to the product.",
-    imageLight: `url("${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/images/templates/templates-images/dash-light.png")`,
-    imageDark: `url("${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/images/templates/templates-images/dash-dark.png")`,
+      "Powered by Google Firebase for secure data handling. Flux Shop uses Firestore for real-time cart preservation and order storage.",
+    imageLight: smallFirebaseLogo,
+    imageDark: smallFirebaseLogo,
   },
   {
-    icon: <Google />,
-    title: "Firebase integration",
+    icon: <VpnKey color="primary" />,
+    title: "Secure Authentication",
     description:
-      "This item could provide information about the mobile app version of the product.",
-    imageLight: `url("${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/images/templates/templates-images/mobile-light.png")`,
-    imageDark: `url("${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/images/templates/templates-images/mobile-dark.png")`,
+      "Robust user registration and login systems. Authenticated users enjoy preserved carts across different sessions and devices.",
+    imageLight: secureLogo,
+    imageDark: secureLogo,
   },
   {
-    icon: <DevicesRoundedIcon />,
-    title: "Responsive",
+    icon: <ShoppingBag color="primary" />,
+    title: "Seamless Checkout",
     description:
-      "Flux Shop's content is repsonsive on all platforms. This includes web and mobile.",
-    imageLight: `url("${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/images/templates/templates-images/devices-light.png")`,
-    imageDark: `url("${
-      process.env.TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/images/templates/templates-images/devices-dark.png")`,
+      "Guest checkout enabled. Non-authenticated users can start shopping immediately and register during the final steps.",
+    imageLight: seamlessCheckoutLight,
+    imageDark: seamlessCheckoutDark,
+  },
+  {
+    icon: <History color="primary" />,
+    title: "Order History",
+    description:
+      "A dedicated 'My Orders' page allows users to track their past purchases, viewing total prices, dates, and itemized product lists.",
+    imageLight: orderHistoryLight,
+    imageDark: orderHistoryDark,
+  },
+  {
+    icon: <Devices color="primary" />,
+    title: "Responsive Design",
+    description:
+      "Flux Shop is fully optimized for desktop, tablet, and mobile. Enjoy a high-end shopping experience regardless of your screen size.",
+    imageLight: responsiveLight,
+    imageDark: responsiveDark,
   },
 ];
 
@@ -145,7 +163,8 @@ MobileLayout.propTypes = {
 export { MobileLayout };
 
 export default function Features() {
-  const [selectedItemIndex, setSelectedItemIndex] = React.useState(0);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const { mode } = useColorScheme();
 
   const handleItemClick = (index) => {
     setSelectedItemIndex(index);
@@ -168,13 +187,13 @@ export default function Features() {
           variant="body1"
           sx={{ color: "text.secondary", mb: { xs: 2, sm: 4 } }}
         >
-          Flux Shop's currently implemented features
+          Implemented features
         </Typography>
       </Box>
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", md: "row-reverse" },
+          flexDirection: { xs: "column", md: "row" },
           gap: 2,
         }}
       >
@@ -242,39 +261,27 @@ export default function Features() {
           sx={{
             display: { xs: "none", sm: "flex" },
             width: { xs: "100%", md: "70%" },
-            height: "var(--items-image-height)",
           }}
         >
-          <Card
-            variant="outlined"
-            sx={{
-              height: "100%",
+          <Box
+            sx={(theme) => ({
+              m: "auto",
               width: "100%",
-              display: { xs: "none", sm: "flex" },
-              pointerEvents: "none",
-            }}
+              height: "100%",
+              position: "relative",
+            })}
           >
-            <Box
-              sx={(theme) => ({
-                m: "auto",
-                width: 420,
-                height: 500,
-                backgroundSize: "contain",
-                backgroundImage: "var(--items-imageLight)",
-                ...theme.applyStyles("dark", {
-                  backgroundImage: "var(--items-imageDark)",
-                }),
-              })}
-              style={
-                items[selectedItemIndex]
-                  ? {
-                      "--items-imageLight": items[selectedItemIndex].imageLight,
-                      "--items-imageDark": items[selectedItemIndex].imageDark,
-                    }
-                  : {}
+            <Image
+              fill
+              src={
+                mode === "dark"
+                  ? selectedFeature.imageDark
+                  : selectedFeature.imageLight
               }
+              alt={selectedFeature.title}
+              style={{ objectFit: "contain" }}
             />
-          </Card>
+          </Box>
         </Box>
       </Box>
     </Container>
