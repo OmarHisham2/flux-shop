@@ -8,6 +8,7 @@
 
 - [Features](#features)
 - [Tech Stack](#techstack)
+- [Live Demo](#livedemo)
 - [Links](#links)
 - [Screenshots](#screenshots)
 
@@ -23,6 +24,10 @@
 **Client:** Next.js, MUI,
 
 **Server:** Firebase Authentication, Firebase Firestore
+
+## **Live Demo**
+
+https://flux-shop-rho.vercel.app/
 
 ## **🔗 Links**
 
