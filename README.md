@@ -7,8 +7,8 @@
 ## **Table of Contents**
 
 - [Features](#features)
-- [Tech Stack](#techstack)
-- [Live Demo](#livedemo)
+- [Tech Stack](#tech-stack)
+- [Live Demo](#live-demo)
 - [Links](#links)
 - [Screenshots](#screenshots)
 
