@@ -33,41 +33,6 @@ https://flux-shop-rho.vercel.app/
 
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/omarhishamgouda)
 
-# **Project Overview**
-
-**Flux Shop** is a modern, responsive e-commerce website that is built using Next.JS, React and the MUI Library. The backend is integrated using Google's Firebase Firestore.
-
-[![responsive-Flux.png](https://i.postimg.cc/Pf9k9X8N/responsive-Flux.png)](https://postimg.cc/CdGtfV7V)
-
-## **Table of Contents**
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Live Demo](#live-demo)
-- [Links](#links)
-- [Screenshots](#screenshots)
-
-## **Features**
-
-- **Dynamic Theming**: Supports seamless switching between Light and Dark modes using MUI's Theme engine.
-- **Responsive Design**: Optimized for all screen sizes, From mobile devices to desktop monitors.
-- **User Authentication**: Provided using both client-side validation and server-side validation through Firebase Authentication.
-- **Data Storage**: Carts and Orders are preserved across user sessions. Ensuring data consistency across different sessions.
-
-## **Tech Stack**
-
-**Client:** Next.js, MUI,
-
-**Server:** Firebase Authentication, Firebase Firestore
-
-## **Live Demo**
-
-Insert gif or link to demo
-
-## **Links**
-
-[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/omarhishamgouda)
-
 ## **Screenshots**
 
 [![Flux-shop-landing.png](https://i.postimg.cc/SN0mj6fp/msedge-Kg3Wbmzv-JI.png)](https://postimg.cc/V5FxVbh7)
