@@ -60,6 +60,7 @@ function Product({ src, title, price }) {
             opacity: imageLoading ? 0 : 1,
           }}
           onLoad={() => setImageLoading(false)}
+          unoptimized
         />
       </Box>
       <CardContent sx={{ flexGrow: 1 }}>

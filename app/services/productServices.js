@@ -32,7 +32,7 @@ export async function filterProducts(category) {
     console.log(product.category);
   });
   const filteredProducts = products.filter(
-    (product) => product.category === category
+    (product) => product.category === category,
   );
   console.log(filteredProducts);
   return filteredProducts;
@@ -43,7 +43,7 @@ export function searchProduct(products, keyword) {
 
   const cleanedKeyword = keyword.toLowerCase().trim();
   const filteredProducts = products.filter((product) =>
-    product.title.toLowerCase().trim().includes(cleanedKeyword)
+    product.title.toLowerCase().trim().includes(cleanedKeyword),
   );
   return filteredProducts;
 }

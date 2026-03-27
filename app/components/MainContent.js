@@ -43,19 +43,27 @@ export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = useState("all");
   const [products, setProducts] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
   const [searchValue, setSearchValue] = useState("");
 
   const handleClick = async (filter) => {
+    setLoading(true);
     const filteredItems = await filterProducts(filter);
     setProducts(filteredItems);
     setFocusedCardIndex(filter);
     setSearchValue("");
+    setLoading(false);
   };
 
   useEffect(() => {
     async function retrieveItems() {
-      const allProducts = await getProducts();
-      setProducts(allProducts);
+      try {
+        const allProducts = await getProducts();
+        setProducts(allProducts);
+      } finally {
+        setLoading(false);
+      }
     }
     retrieveItems();
   }, []);
@@ -173,7 +181,20 @@ export default function MainContent() {
         </Box>
       </Box>
       <Grid container spacing={3}>
-        {displayedProducts.length > 0 ? (
+        {loading ? (
+          <Box
+            sx={{
+              width: "100%",
+              mt: 8,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Typography variant="h4" color="text.secondary">
+              Loading products...
+            </Typography>
+          </Box>
+        ) : displayedProducts.length > 0 ? (
           displayedProducts.map((item, index) => (
             <Grid
               key={item.title}
@@ -186,15 +207,20 @@ export default function MainContent() {
         ) : (
           <Box
             sx={{
-              textAlign: "center",
-              alignItems: "center",
-              justifyContent: "center",
-              alignSelf: "center",
+              width: "100%",
+              mt: 8,
               display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
             }}
           >
-            <Typography sx={{ textAlign: "center" }} variant="h4">
+            <Typography variant="h4" color="text.secondary">
               No Results Found!
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              Try searching for another product.
             </Typography>
           </Box>
         )}
