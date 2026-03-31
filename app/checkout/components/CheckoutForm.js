@@ -37,7 +37,7 @@ export default function CheckoutForm() {
     password,
     confirmPassword,
     address,
-    phoneNumber
+    phoneNumber,
   ) => {
     let isValid = true;
 
@@ -85,11 +85,11 @@ export default function CheckoutForm() {
     if (
       !phoneNumber ||
       phoneNumber.length < 6 ||
-      /^\+([0-9]{1,4})[-\s]?([0-9]{1,15})$/
+      !/^\+([0-9]{1,4})[-\s]?([0-9]{1,15})$/.test(phoneNumber)
     ) {
       setPhoneError(true);
       setPhoneErrorMessage(
-        "Please enter a valid phone number (e.g., +20123...)"
+        "Please enter a valid phone number (e.g., +20123...)",
       );
       isValid = false;
     }
@@ -111,7 +111,7 @@ export default function CheckoutForm() {
       password,
       confirmPassword,
       address,
-      phoneNumber
+      phoneNumber,
     );
 
     if (isValid) {
@@ -121,7 +121,7 @@ export default function CheckoutForm() {
         email,
         password,
         address,
-        phoneNumber
+        phoneNumber,
       );
       if (response) {
         setErrorMessage(response.message);
